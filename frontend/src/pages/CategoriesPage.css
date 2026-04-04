@@ -1,0 +1,126 @@
+.categories-page {
+  max-width: 800px;
+  margin: 30px auto;
+  padding: 0 20px;
+}
+
+.categories-page h1 {
+  margin-bottom: 20px;
+  color: #1a1a2e;
+}
+
+.category-form {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.category-form input {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  flex: 1;
+  min-width: 160px;
+}
+
+.category-form button {
+  padding: 8px 20px;
+  background: #0f3460;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.category-form button:hover {
+  background: #0a2647;
+}
+
+.category-form .cancel-btn {
+  background: #888;
+}
+
+.category-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.category-table th,
+.category-table td {
+  padding: 12px 14px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+  font-size: 14px;
+}
+
+.category-table th {
+  background: #1a1a2e;
+  color: #fff;
+}
+
+.view-btn {
+  background: #533483;
+  color: #fff;
+  border: none;
+  padding: 5px 12px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 13px;
+  margin-left: 6px;
+}
+
+.view-btn:hover {
+  background: #3d2463;
+}
+
+.edit-btn {
+  background: #0f3460;
+  color: #fff;
+  border: none;
+  padding: 5px 12px;
+  border-radius: 3px;
+  cursor: pointer;
+  margin-right: 6px;
+  font-size: 13px;
+}
+
+.delete-btn {
+  background: #e94560;
+  color: #fff;
+  border: none;
+  padding: 5px 12px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.category-products {
+  margin-top: 24px;
+  background: #fff;
+  padding: 20px;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.category-products h3 {
+  margin-bottom: 12px;
+  color: #533483;
+}
+
+.category-products ul {
+  list-style: none;
+  padding: 0;
+}
+
+.category-products li {
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 14px;
+}
