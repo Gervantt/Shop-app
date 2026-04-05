@@ -53,29 +53,12 @@ project/
 
 ## Быстрый старт
 
-### 1. Backend (важно выполнить первым!)
+Теперь в корне проекта можете запустить:
 
 ```bash
-cd backend
-npm install
-
-# Сгенерировать Prisma Client
-npx prisma generate
-
-# Запустить сервер
-npm start
+npm i
+npm run start
 ```
-
-Сервер запустится на **http://localhost:5000**
-
-### 2. Frontend
-
-```bash
-cd frontend
-npm install
-npm start
-```
-Приложение откроется на http://localhost:3000
 
 ## Тестовый аккаунт
 - **Email:** admin@mail.com
