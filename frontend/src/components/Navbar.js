@@ -18,7 +18,7 @@ function Navbar() {
       <div className="navbar-links">
         <Link to="/products">Products</Link>
         <Link to="/categories">Categories</Link>
-        <Link to="/users">Users</Link>
+          {user?.role === "admin" && <Link to="/users">Users</Link>}
       </div>
       <div className="navbar-user">
         <span>Hi, {user?.name}</span>

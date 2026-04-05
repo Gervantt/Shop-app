@@ -7,6 +7,23 @@ const { PrismaClient } = require("@prisma/client");
 const app = express();
 const prisma = new PrismaClient();
 
+// Reads X-User-Id header, fetches the user from DB, attaches to req.caller
+async function requireAuth(req, res, next) {
+  const userId = Number(req.headers["x-user-id"]);
+  if (!userId) return res.status(401).json({ error: "Not authenticated" });
+  const caller = await prisma.user.findUnique({ where: { id: userId } });
+  if (!caller) return res.status(401).json({ error: "User not found" });
+  req.caller = caller;
+  next();
+}
+
+function requireAdmin(req, res, next) {
+  if (req.caller.role !== "admin") {
+    return res.status(403).json({ error: "Forbidden: admin only" });
+  }
+  next();
+}
+
 app.use(cors());
 app.use(express.json());
 
@@ -115,13 +132,22 @@ app.get("/api/users/:id", async (req, res) => {
   }
 });
 
-app.put("/api/users/:id", async (req, res) => {
+app.put("/api/users/:id", requireAuth, async (req, res) => {
+  const targetId = Number(req.params.id);
+  // Users can only edit their own account; admins can edit anyone
+  if (req.caller.role !== "admin" && req.caller.id !== targetId) {
+    return res.status(403).json({ error: "Forbidden: cannot edit other users" });
+  }
   try {
     const { name, email, role } = req.body;
+    // Non-admins cannot change roles
+    const data = req.caller.role === "admin"
+      ? { name, email, role }
+      : { name, email };
 
     const user = await prisma.user.update({
-      where: { id: Number(req.params.id) },
-      data: { name, email, role },
+      where: { id: targetId },
+      data,
       select: {
         id: true,
         name: true,
@@ -137,7 +163,7 @@ app.put("/api/users/:id", async (req, res) => {
   }
 });
 
-app.delete("/api/users/:id", async (req, res) => {
+app.delete("/api/users/:id", requireAuth, requireAdmin, async (req, res) => {
   try {
     await prisma.user.delete({
       where: { id: Number(req.params.id) },
@@ -180,7 +206,7 @@ app.get("/api/categories/:id", async (req, res) => {
   }
 });
 
-app.post("/api/categories", async (req, res) => {
+app.post("/api/categories", requireAuth, requireAdmin, async (req, res) => {
   try {
     const { name, description } = req.body;
 
@@ -195,7 +221,7 @@ app.post("/api/categories", async (req, res) => {
   }
 });
 
-app.put("/api/categories/:id", async (req, res) => {
+app.put("/api/categories/:id", requireAuth, requireAdmin, async (req, res) => {
   try {
     const { name, description } = req.body;
 
@@ -211,7 +237,7 @@ app.put("/api/categories/:id", async (req, res) => {
   }
 });
 
-app.delete("/api/categories/:id", async (req, res) => {
+app.delete("/api/categories/:id", requireAuth, requireAdmin, async (req, res) => {
   try {
     await prisma.category.delete({
       where: { id: Number(req.params.id) },

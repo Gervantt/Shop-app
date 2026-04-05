@@ -1,9 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
+import { AuthContext } from "../context/AuthContext";
 import "./CategoriesPage.css";
 
 const API = "http://localhost:3001/api";
 
 function CategoriesPage() {
+  const { user: currentUser } = useContext(AuthContext);
+  const isAdmin = currentUser?.role === "admin";
+
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);
   const [form, setForm] = useState({ name: "", description: "" });
@@ -36,14 +40,20 @@ function CategoriesPage() {
     if (editingId) {
       await fetch(`${API}/categories/${editingId}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "X-User-Id": String(currentUser.id),
+        },
         body: JSON.stringify(form),
       });
       setEditingId(null);
     } else {
       await fetch(`${API}/categories`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "X-User-Id": String(currentUser.id),
+        },
         body: JSON.stringify(form),
       });
     }
@@ -58,7 +68,10 @@ function CategoriesPage() {
 
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this category and all its products?")) return;
-    await fetch(`${API}/categories/${id}`, { method: "DELETE" });
+    await fetch(`${API}/categories/${id}`, {
+      method: "DELETE",
+      headers: { "X-User-Id": String(currentUser.id) },
+    });
     fetchCategories();
     fetchProducts(); // обновляем, т.к. каскадное удаление
     if (selectedCatId === id) setSelectedCatId(null);
@@ -73,34 +86,36 @@ function CategoriesPage() {
     <div className="categories-page">
       <h1>Categories</h1>
 
-      <form className="category-form" onSubmit={handleSubmit}>
-        <input
-          name="name"
-          placeholder="Category name"
-          value={form.name}
-          onChange={handleChange}
-          required
-        />
-        <input
-          name="description"
-          placeholder="Description"
-          value={form.description}
-          onChange={handleChange}
-        />
-        <button type="submit">{editingId ? "Update" : "Add"}</button>
-        {editingId && (
-          <button
-            type="button"
-            className="cancel-btn"
-            onClick={() => {
-              setEditingId(null);
-              setForm({ name: "", description: "" });
-            }}
-          >
-            Cancel
-          </button>
-        )}
-      </form>
+      {isAdmin && (
+        <form className="category-form" onSubmit={handleSubmit}>
+          <input
+            name="name"
+            placeholder="Category name"
+            value={form.name}
+            onChange={handleChange}
+            required
+          />
+          <input
+            name="description"
+            placeholder="Description"
+            value={form.description}
+            onChange={handleChange}
+          />
+          <button type="submit">{editingId ? "Update" : "Add"}</button>
+          {editingId && (
+            <button
+              type="button"
+              className="cancel-btn"
+              onClick={() => {
+                setEditingId(null);
+                setForm({ name: "", description: "" });
+              }}
+            >
+              Cancel
+            </button>
+          )}
+        </form>
+      )}
 
       <table className="category-table">
         <thead>
@@ -118,15 +133,19 @@ function CategoriesPage() {
               <td>{cat.name}</td>
               <td>{cat.description}</td>
               <td>
-                <button className="edit-btn" onClick={() => handleEdit(cat)}>
-                  Edit
-                </button>
-                <button
-                  className="delete-btn"
-                  onClick={() => handleDelete(cat.id)}
-                >
-                  Delete
-                </button>
+                {isAdmin && (
+                  <button className="edit-btn" onClick={() => handleEdit(cat)}>
+                    Edit
+                  </button>
+                )}
+                {isAdmin && (
+                  <button
+                    className="delete-btn"
+                    onClick={() => handleDelete(cat.id)}
+                  >
+                    Delete
+                  </button>
+                )}
                 <button
                   className="view-btn"
                   onClick={() =>
