@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./UsersPage.css";
 
-const API = "http://localhost:3001/api";
+const API = "http://localhost:5000/api";
 
 function UsersPage() {
   const [users, setUsers] = useState([]);

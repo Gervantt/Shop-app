@@ -1,35 +1,78 @@
-# Shop App — React + Express
+# Shop App — React + Express + Prisma + PostgreSQL
+
+## Описание
+
+Полнофункциональный веб-магазин с аутентификацией, управлением товарами и категориями.
+
+- **Frontend** — React с контекстом авторизации
+- **Backend** — Express API с Prisma ORM
+- **База данных** — PostgreSQL (Supabase)
+- **Аутентификация** — bcrypt + хеширование паролей
 
 ## Структура проекта
 
 ```
 project/
-├── backend/            ← Express сервер (API + JSON база)
-│   ├── server.js       ← Все эндпоинты (Auth + CRUD)
-│   ├── db.json         ← Файл-база данных
-│   └── package.json
-├── frontend/           ← React приложение
-│   ├── public/
+├── backend/                    ← REST API (Express + Prisma)
 │   ├── src/
-│   │   ├── context/    ← AuthContext (React Context)
-│   │   ├── components/ ← Navbar
-│   │   ├── pages/      ← Login, Register, Products, Categories, Users
-│   │   └── styles/     ← Глобальные стили
+│   │   ├── index.js            ← Главный файл сервера (все эндпоинты)
+│   │   ├── seed.js             ← Инициализация БД с данными
+│   │   └── routes/             ← Будущее расширение маршрутов
+│   ├── prisma/
+│   │   ├── schema.prisma       ← Схема БД (User, Category, Product)
+│   │   └── migrations/         ← История изменений БД
+│   ├── .env                    ← Переменные окружения
+│   ├── package.json
+│   ├── README.md               ← Документация бэкенда
+│   └── prisma.config.ts        ← Конфиг Prisma
+│
+├── frontend/                   ← React приложение
+│   ├── public/
+│   │   └── index.html
+│   ├── src/
+│   │   ├── App.js
+│   │   ├── index.js
+│   │   ├── context/
+│   │   │   └── AuthContext.js  ← Контекст авторизации
+│   │   ├── components/
+│   │   │   ├── Navbar.js
+│   │   │   └── Navbar.css
+│   │   ├── pages/              ← Страницы приложения
+│   │   │   ├── LoginPage.js
+│   │   │   ├── RegisterPage.js
+│   │   │   ├── ProductsPage.js
+│   │   │   ├── CategoriesPage.js
+│   │   │   ├── UsersPage.js
+│   │   │   └── *PageName.css
+│   │   ├── styles/
+│   │   │   └── global.css
+│   │   └── ... другие компоненты
 │   └── package.json
 └── README.md
 ```
 
-## Как запустить
+## Быстрый старт
 
-### 1. Backend
+### 1. Backend (важно выполнить первым!)
+
 ```bash
 cd backend
 npm install
+
+# Инициализировать БД таблицами
+npm run migrate
+
+# Заполнить БД тестовыми данными (категории, товары, пользователи)
+npm run seed
+
+# Запустить сервер
 npm start
 ```
-Сервер запустится на http://localhost:5000
+
+Сервер запустится на **http://localhost:5000**
 
 ### 2. Frontend
+
 ```bash
 cd frontend
 npm install
@@ -43,7 +86,19 @@ npm start
 
 ---
 
-## Что реализовано (по требованиям)
+## API Endpoints
+
+Документация всех эндпоинтов в [backend/README.md](backend/README.md)
+
+Основные группы:
+- `/api/register`, `/api/login` — Аутентификация
+- `/api/users` — CRUD пользователей  
+- `/api/categories` — CRUD категорий
+- `/api/products` — CRUD товаров
+
+---
+
+## Что реализовано
 
 ### ✅ 1. Регистрация и аутентификация с хешированием пароля
 - `POST /api/register` — bcrypt.hash(password, 10) хеширует пароль
@@ -82,6 +137,17 @@ npm start
 ---
 
 ## Технологии
-- **Frontend:** React 18, React Router 6, Context API
-- **Backend:** Express.js, bcryptjs, JSON file as database
-- **Без TypeScript, без Redux** — максимально просто для защиты
+
+### Backend
+- **Express.js** — Web-фреймворк
+- **Prisma** — ORM для работы с БД (v7.6.0)
+- **PostgreSQL** — БД через Supabase
+- **bcryptjs** — Хеширование паролей
+- **CORS** — Кросс-доменные запросы
+- **dotenv** — Переменные окружения
+
+### Frontend
+- **React 18** — UI фреймворк
+- **React Router 6** — Навигация между страницами
+- **Context API** — Управление состоянием авторизации
+- **CSS3** — Стили (отдельный файл на каждую компоненту)

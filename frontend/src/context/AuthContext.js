@@ -3,7 +3,7 @@ import React, { createContext, useState, useEffect } from "react";
 // 1) Создаём контекст
 export const AuthContext = createContext();
 
-const API = "http://localhost:3001/api";
+const API = "http://localhost:5000/api";
 
 // 2) Провайдер оборачивает всё приложение
 export function AuthProvider({ children }) {
