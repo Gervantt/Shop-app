@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./CategoriesPage.css";
 
-const API = "http://localhost:5000/api";
+const API = "http://localhost:3001/api";
 
 function CategoriesPage() {
   const [categories, setCategories] = useState([]);

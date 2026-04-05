@@ -59,11 +59,8 @@ project/
 cd backend
 npm install
 
-# Инициализировать БД таблицами
-npm run migrate
-
-# Заполнить БД тестовыми данными (категории, товары, пользователи)
-npm run seed
+# Сгенерировать Prisma Client
+npx prisma generate
 
 # Запустить сервер
 npm start
