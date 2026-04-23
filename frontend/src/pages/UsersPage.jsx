@@ -1,22 +1,26 @@
 import React, { useState, useEffect } from "react";
+import { useDispatch } from "react-redux";
 import { usersAPI } from "../api/apiClient";
+import { showNotification } from "../store/notificationSlice";
+import ConfirmModal from "../components/ConfirmModal";
 
 function UsersPage() {
   const [users, setUsers] = useState([]);
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState({ name: "", email: "", role: "" });
   const [loading, setLoading] = useState(false);
+  const [deleteModal, setDeleteModal] = useState({ isOpen: false, userId: null });
+  const dispatch = useDispatch();
 
   useEffect(() => {
     fetchUsers();
   }, []);
 
-  // Read all
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const users = await usersAPI.getAll();
-      setUsers(users);
+      const usersRes = await usersAPI.getAll();
+      setUsers(usersRes || []);
     } finally {
       setLoading(false);
     }
@@ -26,13 +30,11 @@ function UsersPage() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // Нажатие Edit — заполняем форму
   const handleEdit = (user) => {
     setEditingId(user.id);
     setForm({ name: user.name, email: user.email, role: user.role });
   };
 
-  // Update
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {
@@ -40,161 +42,147 @@ function UsersPage() {
       await usersAPI.update(editingId, form);
       setEditingId(null);
       setForm({ name: "", email: "", role: "" });
+      dispatch(showNotification({ message: `Account "${form.name}" updated`, type: "success" }));
       await fetchUsers();
     } finally {
       setLoading(false);
     }
   };
 
-  // Delete
-  const handleDelete = async (id) => {
-    if (!window.confirm("Delete this user?")) return;
+  const handleDeleteClick = (id) => {
+    setDeleteModal({ isOpen: true, userId: id });
+  };
+
+  const handleConfirmDelete = async () => {
+    const id = deleteModal.userId;
     try {
       setLoading(true);
       await usersAPI.delete(id);
+      dispatch(showNotification({ message: "Member removed from collective", type: "success" }));
       await fetchUsers();
     } finally {
       setLoading(false);
+      setDeleteModal({ isOpen: false, userId: null });
     }
   };
 
-  // Read one by ID
-  const handleViewOne = async (id) => {
-    const user = await usersAPI.getById(id);
-    alert(
-      `User #${user.id}\nName: ${user.name}\nEmail: ${user.email}\nRole: ${user.role}`
-    );
-  };
-
   return (
-    <div className="max-w-3xl mx-auto my-8 px-5">
-      <h1 className="mb-5 text-[#1a1a2e] text-3xl font-bold">Users</h1>
+    <div className="max-w-7xl mx-auto py-16 px-8 flex flex-col gap-12">
+      <header>
+        <div className="inline-flex items-center gap-2 px-3 py-1 bg-rose-50 text-rose-600 rounded-full text-[10px] font-black uppercase tracking-widest mb-4 border border-rose-100">
+          Internal Console
+        </div>
+        <h1 className="text-5xl font-black text-slate-900 tracking-tighter leading-none mb-4">
+          Collective <span className="text-primary italic">Members</span>
+        </h1>
+        <p className="text-slate-400 font-medium text-lg max-w-2xl">
+          Manage access and profiles for all Red Apple members. Use this console with care.
+        </p>
+      </header>
 
-      {/* Форма редактирования (появляется при нажатии Edit) */}
       {editingId && (
-        <form className="bg-white p-5 rounded-lg mb-6 shadow-sm" onSubmit={handleUpdate}>
-          <h3 className="mb-3 text-[#1a1a2e] font-semibold">Edit User #{editingId}</h3>
-          <input
-            name="name"
-            placeholder="Name"
-            value={form.name}
-            onChange={handleChange}
-            required
-            className="block w-full px-3 py-2 mb-2 border border-gray-300 rounded text-sm"
-          />
-          <input
-            name="email"
-            type="email"
-            placeholder="Email"
-            value={form.email}
-            onChange={handleChange}
-            required
-            className="block w-full px-3 py-2 mb-2 border border-gray-300 rounded text-sm"
-          />
-          <select name="role" value={form.role} onChange={handleChange} className="block w-full px-3 py-2 mb-3 border border-gray-300 rounded text-sm">
-            <option value="user">user</option>
-            <option value="admin">admin</option>
-          </select>
-          <div className="flex gap-2">
+        <section className="bg-white border border-slate-100 p-10 rounded-[3rem] shadow-2xl shadow-rose-500/5 animate-in slide-in-from-top duration-500">
+          <div className="flex items-center justify-between mb-8">
+            <h3 className="text-2xl font-black text-slate-900 tracking-tight italic">Modify Account</h3>
             <button 
-              type="submit" 
-              disabled={loading}
-              className={`px-5 py-2 rounded cursor-pointer text-sm transition-colors ${
-                loading
-                  ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
-                  : 'bg-[#0f3460] text-white hover:bg-[#0a2647]'
-              }`}
+              onClick={() => { setEditingId(null); setForm({ name: "", email: "", role: "" }); }}
+              className="text-slate-300 hover:text-slate-900 transition-colors"
             >
-              {loading ? "Loading..." : "Save"}
-            </button>
-            <button
-              type="button"
-              disabled={loading}
-              className={`px-5 py-2 rounded cursor-pointer text-sm transition-colors ${
-                loading
-                  ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
-                  : 'bg-gray-500 text-white hover:bg-gray-600'
-              }`}
-              onClick={() => {
-                setEditingId(null);
-                setForm({ name: "", email: "", role: "" });
-              }}
-            >
-              Cancel
+              ✕
             </button>
           </div>
-        </form>
+          <form className="grid grid-cols-1 md:grid-cols-3 gap-6" onSubmit={handleUpdate}>
+            <div className="space-y-2">
+              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Name</label>
+              <input name="name" value={form.name} onChange={handleChange} required className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold text-slate-800 focus:outline-none focus:ring-4 focus:ring-rose-100 focus:border-rose-500 transition-all"/>
+            </div>
+            <div className="space-y-2">
+              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Email</label>
+              <input name="email" type="email" value={form.email} onChange={handleChange} required className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold text-slate-800 focus:outline-none focus:ring-4 focus:ring-rose-100 focus:border-rose-500 transition-all"/>
+            </div>
+            <div className="space-y-2">
+              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Role</label>
+              <select name="role" value={form.role} onChange={handleChange} className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold text-slate-800 focus:outline-none focus:ring-4 focus:ring-rose-100 focus:border-rose-500 transition-all appearance-none">
+                <option value="user">User</option>
+                <option value="admin">Admin</option>
+              </select>
+            </div>
+            <div className="md:col-span-3 flex justify-end gap-4 mt-4">
+              <button type="submit" disabled={loading} className="px-12 py-4 bg-slate-900 text-white rounded-2xl font-black tracking-widest uppercase text-xs hover:bg-primary transition-all active:scale-95 shadow-xl shadow-slate-200">
+                Update Account
+              </button>
+            </div>
+          </form>
+        </section>
       )}
 
-      <table className="w-full border-collapse bg-white rounded-lg overflow-hidden shadow-sm">
-        <thead>
-          <tr className="bg-[#1a1a2e] text-white">
-            <th className="p-3 text-left border-b text-sm">ID</th>
-            <th className="p-3 text-left border-b text-sm">Name</th>
-            <th className="p-3 text-left border-b text-sm">Email</th>
-            <th className="p-3 text-left border-b text-sm">Role</th>
-            <th className="p-3 text-left border-b text-sm">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {loading && (
-            <tr>
-              <td colSpan="5" className="p-3 text-center text-gray-600">
-                Loading users...
-              </td>
+      <div className="bg-white rounded-[3rem] border border-slate-100 shadow-2xl shadow-rose-500/5 overflow-hidden">
+        <table className="w-full border-collapse">
+          <thead>
+            <tr className="bg-slate-50">
+              <th className="px-8 py-6 text-left text-[10px] font-black uppercase tracking-widest text-slate-400 border-b border-slate-100">ID</th>
+              <th className="px-8 py-6 text-left text-[10px] font-black uppercase tracking-widest text-slate-400 border-b border-slate-100">Member</th>
+              <th className="px-8 py-6 text-left text-[10px] font-black uppercase tracking-widest text-slate-400 border-b border-slate-100">Access</th>
+              <th className="px-8 py-6 text-right text-[10px] font-black uppercase tracking-widest text-slate-400 border-b border-slate-100">Actions</th>
             </tr>
-          )}
-          {users.map((u) => (
-            <tr key={u.id} className="border-b">
-              <td className="p-3 text-sm">{u.id}</td>
-              <td className="p-3 text-sm">{u.name}</td>
-              <td className="p-3 text-sm">{u.email}</td>
-              <td className="p-3 text-sm">
-                <span className={`inline-block px-2 py-1 rounded-full text-xs font-semibold ${u.role === 'admin' ? 'bg-[#e94560] text-white' : 'bg-gray-300 text-gray-800'}`}>
-                  {u.role}
-                </span>
-              </td>
-              <td className="p-3 text-sm space-x-1">
-                <button
-                  disabled={loading}
-                  className={`px-3 py-1 rounded text-xs cursor-pointer transition-colors ${
-                    loading
-                      ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
-                      : 'bg-[#533483] text-white hover:bg-[#3d2463]'
-                  }`}
-                  onClick={() => handleViewOne(u.id)}
-                >
-                  View
-                </button>
-                <button 
-                  disabled={loading}
-                  className={`px-3 py-1 rounded text-xs cursor-pointer transition-colors ${
-                    loading
-                      ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
-                      : 'bg-[#0f3460] text-white hover:bg-[#0a2647]'
-                  }`}
-                  onClick={() => handleEdit(u)}
-                >
-                  Edit
-                </button>
-                <button
-                  disabled={loading}
-                  className={`px-3 py-1 rounded text-xs cursor-pointer transition-colors ${
-                    loading
-                      ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
-                      : 'bg-[#e94560] text-white hover:bg-[#c73652]'
-                  }`}
-                  onClick={() => handleDelete(u.id)}
-                >
-                  Delete
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody className="divide-y divide-slate-50">
+            {users.map((u) => (
+              <tr key={u.id} className="group hover:bg-slate-50 transition-colors">
+                <td className="px-8 py-6 text-sm font-bold text-slate-400 tracking-tighter">#{u.id}</td>
+                <td className="px-8 py-6">
+                  <div className="flex flex-col">
+                    <span className="font-black text-slate-900 tracking-tight group-hover:text-primary transition-colors">{u.name}</span>
+                    <span className="text-xs font-medium text-slate-400">{u.email}</span>
+                  </div>
+                </td>
+                <td className="px-8 py-6">
+                  <span className={`inline-flex px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest border ${
+                    u.role === 'admin' ? 'bg-rose-50 border-rose-100 text-rose-600' : 'bg-slate-50 border-slate-100 text-slate-400'
+                  }`}>
+                    {u.role}
+                  </span>
+                </td>
+                <td className="px-8 py-6 text-right space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button 
+                    disabled={loading} 
+                    onClick={() => handleEdit(u)}
+                    className="p-3 bg-white border border-slate-200 rounded-xl text-slate-400 hover:text-primary hover:border-primary transition-all active:scale-90"
+                    title="Edit Member"
+                  >
+                    ✎
+                  </button>
+                  <button 
+                    disabled={loading} 
+                    onClick={() => handleDeleteClick(u.id)}
+                    className="p-3 bg-white border border-slate-200 rounded-xl text-slate-400 hover:text-rose-600 hover:border-rose-600 transition-all active:scale-90"
+                    title="Remove Member"
+                  >
+                    ✕
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        
+        {users.length === 0 && !loading && (
+          <div className="py-20 flex flex-col items-center text-center">
+            <p className="text-slate-400 font-bold uppercase tracking-widest text-xs">No collective members found.</p>
+          </div>
+        )}
+      </div>
+
+      <ConfirmModal
+        isOpen={deleteModal.isOpen}
+        title="Remove Member"
+        message="Are you sure you want to remove this member from the collective? This access cannot be restored."
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setDeleteModal({ isOpen: false, userId: null })}
+      />
     </div>
   );
 }
 
 export default UsersPage;
+

@@ -1,0 +1,212 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "name": "Admin",
+      "email": "admin@example.com",
+      "password": "$2a$10$RTWoGl5kan8zgcjK.0PgbuIhZIG.XzKoF4vkhfXQ4DM0dMq6u/cAm",
+      "role": "admin",
+      "createdAt": "2026-04-23T13:17:17.730Z"
+    }
+  ],
+  "categories": [
+    {
+      "id": 1,
+      "name": "Luxe Makeup",
+      "description": "High-performance pigments and prestige formulas for a flawless finish."
+    },
+    {
+      "id": 2,
+      "name": "Advanced Skincare",
+      "description": "Dermatologist-tested solutions for radiant, youthful, and healthy skin."
+    },
+    {
+      "id": 3,
+      "name": "Professional Haircare",
+      "description": "Salon-quality treatments for strength, shine, and effortless styling."
+    },
+    {
+      "id": 4,
+      "name": "Signature Fragrance",
+      "description": "Exquisite scents crafted by master perfumers to define your presence."
+    },
+    {
+      "id": 5,
+      "name": "Bespoke Accessories",
+      "description": "Curated lifestyle essentials that blend functionality with premium design."
+    }
+  ],
+  "products": [
+    {
+      "id": 1,
+      "categoryId": 1,
+      "name": "Velvet Matte Lipstick",
+      "price": 34,
+      "stock": 45,
+      "description": "A long-wearing, high-pigment lipstick with a comfortable matte finish.",
+      "image": "/uploads/1776968118999-610677815-LAG_GLC801_matte_lipstick.webp"
+    },
+    {
+      "id": 2,
+      "categoryId": 1,
+      "name": "Silk Glow Foundation",
+      "price": 52,
+      "stock": 28,
+      "description": "Medium-coverage foundation with a natural, dewy finish that lasts 24 hours.",
+      "image": "/uploads/1776968147241-571065259-BA_Foundation_16_9_1900x1069.webp"
+    },
+    {
+      "id": 3,
+      "categoryId": 2,
+      "name": "Hydra-Boost Moisturizer",
+      "price": 68,
+      "stock": 15,
+      "description": "Intense hydration with hyaluronic acid for a plump and refreshed complexion.",
+      "image": "/uploads/1776968184179-464108404-3.webp"
+    },
+    {
+      "id": 4,
+      "categoryId": 2,
+      "name": "Retinol Night Serum",
+      "price": 85,
+      "stock": 12,
+      "description": "A powerful overnight treatment to reduce fine lines and improve skin texture.",
+      "image": "/uploads/1776968213063-690050403-4.jpg"
+    },
+    {
+      "id": 5,
+      "categoryId": 3,
+      "name": "Keratin Repair Mask",
+      "price": 42,
+      "stock": 30,
+      "description": "Deep conditioning treatment that restores damaged hair and prevents breakage.",
+      "image": "/uploads/1776968232863-248711464-5.jpg"
+    },
+    {
+      "id": 6,
+      "categoryId": 3,
+      "name": "Silver Shine Shampoo",
+      "price": 28,
+      "stock": 50,
+      "description": "Neutralizes brassy tones in blonde and silver hair for a clean, cool finish.",
+      "image": "/uploads/1776968292462-697759776-6.webp"
+    },
+    {
+      "id": 7,
+      "categoryId": 4,
+      "name": "Midnight Rose EDP",
+      "price": 120,
+      "stock": 8,
+      "description": "A seductive blend of Bulgarian rose, blackcurrant, and warm vanilla.",
+      "image": "/uploads/1776968317516-15196152-7.jpg"
+    },
+    {
+      "id": 8,
+      "categoryId": 4,
+      "name": "Ocean Mist Cologne",
+      "price": 95,
+      "stock": 20,
+      "description": "A fresh, aquatic scent with notes of sea salt, sage, and driftwood.",
+      "image": "/uploads/1776968375437-727597361-8.avif"
+    },
+    {
+      "id": 9,
+      "categoryId": 5,
+      "name": "Leather Tech Portfolio",
+      "price": 145,
+      "stock": 5,
+      "description": "Handcrafted Italian leather portfolio with dedicated slots for tablets and stylus.",
+      "image": "/uploads/1776968495635-227507414-9.webp"
+    },
+    {
+      "id": 10,
+      "categoryId": 5,
+      "name": "Gold Accent Sunglasses",
+      "price": 210,
+      "stock": 10,
+      "description": "Timeless aviator design with 24k gold plated accents and polarized lenses.",
+      "image": "/uploads/1776968517370-253410429-10.webp"
+    },
+    {
+      "id": 11,
+      "categoryId": 1,
+      "name": "Illuminating Primer",
+      "price": 38,
+      "stock": 40,
+      "description": "Preps skin with a subtle glow for better makeup application and longevity.",
+      "image": "/uploads/1776968542256-329996131-11.jpg"
+    },
+    {
+      "id": 12,
+      "categoryId": 2,
+      "name": "Vitamin C Daily Glow",
+      "price": 55,
+      "stock": 22,
+      "description": "Brightening serum that protects against environmental stressors and evens tone.",
+      "image": "/uploads/1776968553644-181317714-12.webp"
+    },
+    {
+      "id": 13,
+      "categoryId": 3,
+      "name": "Ionic Pro Hair Dryer",
+      "price": 180,
+      "stock": 7,
+      "description": "Ultralight professional dryer with advanced ionic technology for frizz-free results.",
+      "image": "/uploads/1776968606488-753880945-13.jpg"
+    },
+    {
+      "id": 14,
+      "categoryId": 4,
+      "name": "Sunset Oud Perfume",
+      "price": 240,
+      "stock": 3,
+      "description": "An opulent, woody fragrance featuring rare oud, amber, and exotic spices.",
+      "image": "/uploads/1776968636352-236114719-14.webp"
+    },
+    {
+      "id": 15,
+      "categoryId": 5,
+      "name": "Wool Cashmere Scarf",
+      "price": 88,
+      "stock": 18,
+      "description": "Sustainably sourced wool and cashmere blend for ultimate softness and warmth.",
+      "image": "/uploads/1776968681688-413526843-15.webp"
+    },
+    {
+      "id": 16,
+      "categoryId": 1,
+      "name": "Precision Eye Liner",
+      "price": 24,
+      "stock": 60,
+      "description": "Waterproof liquid eyeliner with a felt tip for sharp, graphic looks.",
+      "image": "/uploads/1776968732130-373756056-16.webp"
+    },
+    {
+      "id": 17,
+      "categoryId": 2,
+      "name": "Purifying Clay Mask",
+      "price": 31,
+      "stock": 35,
+      "description": "Detoxifies pores and absorbs excess oil without stripping moisture.",
+      "image": "/uploads/1776968748661-425666255-17.webp"
+    },
+    {
+      "id": 18,
+      "categoryId": 3,
+      "name": "Argan Oil Elixir",
+      "price": 29,
+      "stock": 55,
+      "description": "Lightweight oil that tames flyaways and provides a silky, mirror-like shine.",
+      "image": "/uploads/1776968785931-551339834-18.jpg"
+    },
+    {
+      "id": 19,
+      "categoryId": 4,
+      "name": "Citrus Bloom Mist",
+      "price": 45,
+      "stock": 25,
+      "description": "A refreshing hair and body mist with notes of bergamot and neroli.",
+      "image": "/uploads/1776968808070-183322169-19.jpg"
+    }
+  ]
+}

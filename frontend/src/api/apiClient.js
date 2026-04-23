@@ -1,9 +1,20 @@
 const API = "http://localhost:3001/api";
 
-// ============ Auth ============
+const getAuthToken = () => {
+  return localStorage.getItem("token") || "";
+};
+
+const getAuthHeaders = (isFormData = false) => {
+  const token = getAuthToken();
+  return {
+    ...(!isFormData && { "Content-Type": "application/json" }),
+    ...(token && { Authorization: `Bearer ${token}` }),
+  };
+};
+
 export const authAPI = {
   login: async (email, password) => {
-    const res = await fetch(`${API}/login`, {
+    const res = await fetch(`${API}/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
@@ -14,7 +25,7 @@ export const authAPI = {
   },
 
   register: async (name, email, password) => {
-    const res = await fetch(`${API}/register`, {
+    const res = await fetch(`${API}/auth/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, email, password }),
@@ -25,80 +36,97 @@ export const authAPI = {
   },
 };
 
-// ============ Products ============
 export const productsAPI = {
   getAll: async () => {
     const res = await fetch(`${API}/products`);
     return res.json();
   },
 
-  create: async (data) => {
-    const res = await fetch(`${API}/products`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    });
+  getById: async (id) => {
+    const res = await fetch(`${API}/products/${id}`);
+    if (!res.ok) throw new Error("Product not found");
     return res.json();
   },
 
+  create: async (data) => {
+    const isFormData = data instanceof FormData;
+    const res = await fetch(`${API}/products`, {
+      method: "POST",
+      headers: getAuthHeaders(isFormData),
+      body: isFormData ? data : JSON.stringify(data),
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Failed to create product");
+    return result;
+  },
+
   update: async (id, data) => {
+    const isFormData = data instanceof FormData;
     const res = await fetch(`${API}/products/${id}`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
+      headers: getAuthHeaders(isFormData),
+      body: isFormData ? data : JSON.stringify(data),
     });
-    return res.json();
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Failed to update product");
+    return result;
   },
 
   delete: async (id) => {
     const res = await fetch(`${API}/products/${id}`, {
       method: "DELETE",
+      headers: getAuthHeaders(),
     });
-    return res.json();
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Failed to delete product");
+    return result;
   },
 };
 
-// ============ Categories ============
 export const categoriesAPI = {
   getAll: async () => {
     const res = await fetch(`${API}/categories`);
     return res.json();
   },
 
-  create: async (data, userId) => {
+  getById: async (id) => {
+    const res = await fetch(`${API}/categories/${id}`);
+    return res.json();
+  },
+
+  create: async (data) => {
     const res = await fetch(`${API}/categories`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-User-Id": String(userId),
-      },
+      headers: getAuthHeaders(),
       body: JSON.stringify(data),
     });
-    return res.json();
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Failed to create category");
+    return result;
   },
 
-  update: async (id, data, userId) => {
+  update: async (id, data) => {
     const res = await fetch(`${API}/categories/${id}`, {
       method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        "X-User-Id": String(userId),
-      },
+      headers: getAuthHeaders(),
       body: JSON.stringify(data),
     });
-    return res.json();
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Failed to update category");
+    return result;
   },
 
-  delete: async (id, userId) => {
+  delete: async (id) => {
     const res = await fetch(`${API}/categories/${id}`, {
       method: "DELETE",
-      headers: { "X-User-Id": String(userId) },
+      headers: getAuthHeaders(),
     });
-    return res.json();
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Failed to delete category");
+    return result;
   },
 };
 
-// ============ Users ============
 export const usersAPI = {
   getAll: async () => {
     const res = await fetch(`${API}/users`);
@@ -113,16 +141,21 @@ export const usersAPI = {
   update: async (id, data) => {
     const res = await fetch(`${API}/users/${id}`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: getAuthHeaders(),
       body: JSON.stringify(data),
     });
-    return res.json();
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Failed to update user");
+    return result;
   },
 
   delete: async (id) => {
     const res = await fetch(`${API}/users/${id}`, {
       method: "DELETE",
+      headers: getAuthHeaders(),
     });
-    return res.json();
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Failed to delete user");
+    return result;
   },
 };
