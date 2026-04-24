@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { logoutUser } from "../store/authSlice";
 import { toggleCart, removeFromCart, clearCart, updateQuantity, addToCart } from "../store/cartSlice";
+import { IMAGE_BASE } from "../api/apiClient";
 
 function Navbar() {
   const { user, isAuthenticated } = useSelector((state) => state.auth);
@@ -116,7 +117,7 @@ function Navbar() {
               ) : items.map(item => (
                 <div key={item.id} className="group flex gap-4 bg-slate-50 p-4 rounded-2xl hover:bg-white hover:shadow-xl hover:shadow-rose-500/5 transition-all">
                   <div className="w-20 h-20 bg-white rounded-xl overflow-hidden shadow-sm shrink-0">
-                    <img src={item.image ? (item.image.startsWith('http') ? item.image : `http://localhost:3001${item.image}`) : "https://placehold.co/400x500"} alt={item.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                    <img src={item.image ? (item.image.startsWith('http') ? item.image : `${IMAGE_BASE}${item.image}`) : "https://placehold.co/400x500"} alt={item.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                   </div>
                   <div className="flex-1 flex flex-col justify-between">
                     <div>

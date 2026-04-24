@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
-import { productsAPI, categoriesAPI } from "../api/apiClient";
+import { productsAPI, categoriesAPI, IMAGE_BASE } from "../api/apiClient";
 import { addToCart } from "../store/cartSlice";
 import { showNotification } from "../store/notificationSlice";
 
@@ -95,7 +95,7 @@ function ProductsPage() {
               <div className="relative aspect-[4/5] overflow-hidden rounded-[2.5rem] bg-slate-100 shadow-xl shadow-slate-200/50">
                 <Link to={`/products/${product.id}`} className="block w-full h-full">
                   <img 
-                    src={product.image ? (product.image.startsWith('http') ? product.image : `http://localhost:3001${product.image}`) : "https://placehold.co/400x500"} 
+                    src={product.image ? (product.image.startsWith('http') ? product.image : `${IMAGE_BASE}${product.image}`) : "https://placehold.co/400x500"} 
                     alt={product.name} 
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out" 
                   />

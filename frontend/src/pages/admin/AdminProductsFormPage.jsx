@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { productsAPI, categoriesAPI } from '../../api/apiClient';
+import { productsAPI, categoriesAPI, IMAGE_BASE } from '../../api/apiClient';
 import { useDispatch } from 'react-redux';
 import { showNotification } from '../../store/notificationSlice';
 
@@ -52,7 +52,7 @@ const AdminProductsFormPage = () => {
           categoryId: productData.categoryId || '',
           stock: productData.stock || '0',
           image: null,
-          imagePreview: productData.image ? (productData.image.startsWith('http') ? productData.image : `http://localhost:3001${productData.image}`) : '',
+          imagePreview: productData.image ? (productData.image.startsWith('http') ? productData.image : `${IMAGE_BASE}${productData.image}`) : '',
         });
         setCategories(categoriesData || []);
         setCategoriesLoading(false);

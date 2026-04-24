@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { productsAPI, categoriesAPI } from '../api/apiClient';
+import { productsAPI, categoriesAPI, IMAGE_BASE } from '../api/apiClient';
 import { useDispatch } from 'react-redux';
 import { addToCart } from '../store/cartSlice';
 import { showNotification } from '../store/notificationSlice';
@@ -95,7 +95,7 @@ const ProductDetailPage = () => {
           <div className="sticky top-32 group">
             <div className="relative aspect-square overflow-hidden rounded-[3rem] bg-slate-50 shadow-2xl shadow-slate-200">
               <img
-                src={product.image ? (product.image.startsWith('http') ? product.image : `http://localhost:3001${product.image}`) : 'https://placehold.co/800'}
+                src={product.image ? (product.image.startsWith('http') ? product.image : `${IMAGE_BASE}${product.image}`) : 'https://placehold.co/800'}
                 alt={product.name}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
               />

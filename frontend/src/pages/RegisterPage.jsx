@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
+import { authAPI } from "../api/apiClient";
 import { loginUser } from "../store/authSlice";
 import { showNotification } from "../store/notificationSlice";
 
@@ -16,13 +17,7 @@ function RegisterPage() {
     e.preventDefault();
     try {
       setLoading(true);
-      const res = await fetch("http://localhost:3001/api/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password })
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Registration failed");
+      const data = await authAPI.register(name, email, password);
       
       dispatch(loginUser({ user: data.user, token: data.token }));
       dispatch(showNotification({ message: "Account created successfully", type: "success" }));

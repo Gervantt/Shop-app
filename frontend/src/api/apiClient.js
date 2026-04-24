@@ -1,4 +1,7 @@
-const API = "http://localhost:3001/api";
+const API_BASE = "http://localhost:3001";
+const API = `${API_BASE}/api`;
+
+export const IMAGE_BASE = API_BASE;
 
 const getAuthToken = () => {
   return localStorage.getItem("token") || "";
@@ -6,156 +9,105 @@ const getAuthToken = () => {
 
 const getAuthHeaders = (isFormData = false) => {
   const token = getAuthToken();
-  return {
-    ...(!isFormData && { "Content-Type": "application/json" }),
-    ...(token && { Authorization: `Bearer ${token}` }),
+  const headers = {};
+  
+  if (!isFormData) {
+    headers["Content-Type"] = "application/json";
+  }
+  
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+  
+  return headers;
+};
+
+const request = async (endpoint, options = {}) => {
+  const { method = "GET", body, isFormData = false, ...customOptions } = options;
+  
+  const config = {
+    method,
+    headers: getAuthHeaders(isFormData),
+    ...customOptions,
   };
+
+  if (body) {
+    config.body = isFormData ? body : JSON.stringify(body);
+  }
+
+  try {
+    const res = await fetch(`${API}${endpoint}`, config);
+    const data = await res.json();
+    
+    if (!res.ok) {
+      throw new Error(data.error || data.message || `Request failed with status ${res.status}`);
+    }
+    
+    return data;
+  } catch (error) {
+    console.error(`API Error (${endpoint}):`, error);
+    throw error;
+  }
 };
 
 export const authAPI = {
-  login: async (email, password) => {
-    const res = await fetch(`${API}/auth/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error);
-    return data;
-  },
+  login: (email, password) => 
+    request("/auth/login", { 
+      method: "POST", 
+      body: { email, password } 
+    }),
 
-  register: async (name, email, password) => {
-    const res = await fetch(`${API}/auth/register`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, password }),
-    });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error);
-    return data;
-  },
+  register: (name, email, password) => 
+    request("/auth/register", { 
+      method: "POST", 
+      body: { name, email, password } 
+    }),
 };
 
 export const productsAPI = {
-  getAll: async () => {
-    const res = await fetch(`${API}/products`);
-    return res.json();
-  },
+  getAll: () => request("/products"),
+  
+  getById: (id) => request(`/products/${id}`),
 
-  getById: async (id) => {
-    const res = await fetch(`${API}/products/${id}`);
-    if (!res.ok) throw new Error("Product not found");
-    return res.json();
-  },
-
-  create: async (data) => {
+  create: (data) => {
     const isFormData = data instanceof FormData;
-    const res = await fetch(`${API}/products`, {
-      method: "POST",
-      headers: getAuthHeaders(isFormData),
-      body: isFormData ? data : JSON.stringify(data),
+    return request("/products", { 
+      method: "POST", 
+      body: data, 
+      isFormData 
     });
-    const result = await res.json();
-    if (!res.ok) throw new Error(result.error || "Failed to create product");
-    return result;
   },
 
-  update: async (id, data) => {
+  update: (id, data) => {
     const isFormData = data instanceof FormData;
-    const res = await fetch(`${API}/products/${id}`, {
-      method: "PUT",
-      headers: getAuthHeaders(isFormData),
-      body: isFormData ? data : JSON.stringify(data),
+    return request(`/products/${id}`, { 
+      method: "PUT", 
+      body: data, 
+      isFormData 
     });
-    const result = await res.json();
-    if (!res.ok) throw new Error(result.error || "Failed to update product");
-    return result;
   },
 
-  delete: async (id) => {
-    const res = await fetch(`${API}/products/${id}`, {
-      method: "DELETE",
-      headers: getAuthHeaders(),
-    });
-    const result = await res.json();
-    if (!res.ok) throw new Error(result.error || "Failed to delete product");
-    return result;
-  },
+  delete: (id) => request(`/products/${id}`, { method: "DELETE" }),
 };
 
 export const categoriesAPI = {
-  getAll: async () => {
-    const res = await fetch(`${API}/categories`);
-    return res.json();
-  },
+  getAll: () => request("/categories"),
+  
+  getById: (id) => request(`/categories/${id}`),
 
-  getById: async (id) => {
-    const res = await fetch(`${API}/categories/${id}`);
-    return res.json();
-  },
+  create: (data) => request("/categories", { method: "POST", body: data }),
 
-  create: async (data) => {
-    const res = await fetch(`${API}/categories`, {
-      method: "POST",
-      headers: getAuthHeaders(),
-      body: JSON.stringify(data),
-    });
-    const result = await res.json();
-    if (!res.ok) throw new Error(result.error || "Failed to create category");
-    return result;
-  },
+  update: (id, data) => request(`/categories/${id}`, { method: "PUT", body: data }),
 
-  update: async (id, data) => {
-    const res = await fetch(`${API}/categories/${id}`, {
-      method: "PUT",
-      headers: getAuthHeaders(),
-      body: JSON.stringify(data),
-    });
-    const result = await res.json();
-    if (!res.ok) throw new Error(result.error || "Failed to update category");
-    return result;
-  },
-
-  delete: async (id) => {
-    const res = await fetch(`${API}/categories/${id}`, {
-      method: "DELETE",
-      headers: getAuthHeaders(),
-    });
-    const result = await res.json();
-    if (!res.ok) throw new Error(result.error || "Failed to delete category");
-    return result;
-  },
+  delete: (id) => request(`/categories/${id}`, { method: "DELETE" }),
 };
 
 export const usersAPI = {
-  getAll: async () => {
-    const res = await fetch(`${API}/users`);
-    return res.json();
-  },
+  getAll: () => request("/users"),
+  
+  getById: (id) => request(`/users/${id}`),
 
-  getById: async (id) => {
-    const res = await fetch(`${API}/users/${id}`);
-    return res.json();
-  },
+  update: (id, data) => request(`/users/${id}`, { method: "PUT", body: data }),
 
-  update: async (id, data) => {
-    const res = await fetch(`${API}/users/${id}`, {
-      method: "PUT",
-      headers: getAuthHeaders(),
-      body: JSON.stringify(data),
-    });
-    const result = await res.json();
-    if (!res.ok) throw new Error(result.error || "Failed to update user");
-    return result;
-  },
-
-  delete: async (id) => {
-    const res = await fetch(`${API}/users/${id}`, {
-      method: "DELETE",
-      headers: getAuthHeaders(),
-    });
-    const result = await res.json();
-    if (!res.ok) throw new Error(result.error || "Failed to delete user");
-    return result;
-  },
+  delete: (id) => request(`/users/${id}`, { method: "DELETE" }),
 };

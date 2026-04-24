@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { categoriesAPI, productsAPI } from "../api/apiClient";
+import { categoriesAPI, productsAPI, IMAGE_BASE } from "../api/apiClient";
 
 function CategoriesPage() {
   const [categories, setCategories] = useState([]);
@@ -78,7 +78,7 @@ function CategoriesPage() {
                 <div className="grid grid-cols-4 gap-2">
                   {getCategoryProducts(cat.id).map(p => (
                     <div key={p.id} className="aspect-square bg-slate-50 rounded-xl overflow-hidden border border-slate-100 shadow-sm group-hover:shadow-md transition-all">
-                      <img src={p.image ? (p.image.startsWith('http') ? p.image : `http://localhost:3001${p.image}`) : "https://placehold.co/400x500"} alt={p.name} className="w-full h-full object-cover" />
+                      <img src={p.image ? (p.image.startsWith('http') ? p.image : `${IMAGE_BASE}${p.image}`) : "https://placehold.co/400x500"} alt={p.name} className="w-full h-full object-cover" />
                     </div>
                   ))}
                   {[...Array(Math.max(0, 4 - getCategoryProducts(cat.id).length))].map((_, i) => (

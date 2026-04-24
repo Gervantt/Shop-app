@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
+import { authAPI } from "../api/apiClient";
 import { loginUser } from "../store/authSlice";
 import { showNotification } from "../store/notificationSlice";
 
@@ -15,13 +16,7 @@ function LoginPage() {
     e.preventDefault();
     try {
       setLoading(true);
-      const res = await fetch("http://localhost:3001/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Login failed");
+      const data = await authAPI.login(email, password);
       
       dispatch(loginUser({ user: data.user, token: data.token }));
       dispatch(showNotification({ message: "Successfully logged in", type: "success" }));
